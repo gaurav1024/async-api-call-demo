@@ -7,7 +7,11 @@ public record UserDTO(Long id,
     Address address, 
     String phone, 
     String website, 
-    Company company) {}
+    Company company) {
+        public static UserDTO GUEST() {
+            return new UserDTO(0L, "Guest user", "", "", new Address("", "", "", "", new Geo("", "")), "", "", new Company("", "", ""));
+        }
+    }
 
 record Address (String street, String suite,
     String city,
