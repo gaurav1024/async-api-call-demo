@@ -3,6 +3,7 @@ package com.example.demo.service;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -13,20 +14,23 @@ import com.example.demo.dto.UserDTO;
 
 @Service
 public class DashboardService {    
-    @Value("${url.user}")
+    @Value("${clients.user.base-url}")
     private String userUrl;
 
-    @Value("${url.quote}")
+    @Value("${clients.quote.base-url}")
     private String quoteUrl;
 
-    private final RestClient restClient;
+    private final RestClient userRestClient;
 
-    DashboardService(RestClient restClient) {
-        this.restClient = restClient;
+    private final RestClient quoteRestClient;
+
+    DashboardService(@Qualifier("userRestClient") RestClient userRestClient, @Qualifier("quoteRestClient") RestClient quoteRestClient) {
+        this.userRestClient = userRestClient;   
+        this.quoteRestClient = quoteRestClient;
     }
 
     public UserDTO getUser() {
-        UserDTO user = restClient.get()
+        UserDTO user = userRestClient.get()
         .uri(userUrl)
         .retrieve()
         .body(UserDTO.class);
@@ -34,7 +38,7 @@ public class DashboardService {
     }
 
     public QuoteDTO getQuote() {
-        QuoteDTO quote = restClient.get()
+        QuoteDTO quote = quoteRestClient.get()
         .uri(quoteUrl)
         .retrieve()
         .body(QuoteDTO.class);
